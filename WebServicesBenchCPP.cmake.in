@@ -1,0 +1,13 @@
+## Include directories +
+set(ANCH_INCLUDES_DIR "/usr/local/include/anch")
+set(THRIFT_INCLUDES_DIR "/usr/local/include/thrift")
+## Include directories -
+
+# Library path +
+set(ANCH_LIBRARIES_PATH "/usr/local/lib")
+# Library path -
+
+set(APPLICATION_COMPILE_FLAGS "-O2 -march=native -pipe")
+#set(APPLICATION_COMPILE_FLAGS "-g")
+
+set(UNIT_TESTS ON CACHE BOOL "Compile unit tests")
