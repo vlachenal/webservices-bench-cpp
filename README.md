@@ -11,4 +11,5 @@ I decide to make C++/Thrift projects to test AnCH Framework in a real project.
 ## Differences between C++ and Java implamentations
 
 Java server implementation runs on a web server (I use Tomcat). The requests are send through HTTP.
+
 The C++ server implementation is a Thrift standalone server.
