@@ -21,15 +21,12 @@ elseif(GCC_VERSION VERSION_GREATER 6.0 OR GCC_VERSION VERSION_EQUAL 6.0)
 elseif(GCC_VERSION VERSION_GREATER 4.9 OR GCC_VERSION VERSION_EQUAL 4.9)
   message(STATUS "Version >= 4.7 use -std=c++11")
   add_definitions("-std=c++11")
-  set(USE_BOOST_RE false)
 elseif(GCC_VERSION VERSION_GREATER 4.7 OR GCC_VERSION VERSION_EQUAL 4.7)
   message(STATUS "Version >= 4.7 use -std=c++11")
   add_definitions("-std=c++11")
-  set(USE_BOOST_RE true)
 else()
   message(STATUS "4.5 <= Version < 4.7 use -std=c++0x")
   add_definitions("-std=c++0x")
-  set(USE_BOOST_RE true)
 endif()
 # Check GCC version -
 
@@ -42,14 +39,12 @@ else()
 endif()
 add_definitions(${APPLICATION_COMPILE_FLAGS})
 
-find_package(Boost)
 find_package (Threads)
 
 # Includes location
 include_directories(
   inc
   thrift.generated
-  ${Boost_INCLUDE_DIRS}
   ${ANCH_INCLUDES_DIR}
   ${THRIFT_INCLUDES_DIR}
 )

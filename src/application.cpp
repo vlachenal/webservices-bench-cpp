@@ -16,8 +16,6 @@
 #include <thrift/transport/TTransportUtils.h>
 #include <thrift/TToString.h>
 
-#include <boost/make_shared.hpp>
-
 #include <iostream>
 #include <stdexcept>
 #include <sstream>
@@ -82,18 +80,18 @@ main(int argc, char* argv[]) {
 
   const int workerCount = 10;
 
-  boost::shared_ptr<ThreadManager> threadManager = ThreadManager::newSimpleThreadManager(workerCount);
-  threadManager->threadFactory(boost::make_shared<PlatformThreadFactory>());
+  std::shared_ptr<ThreadManager> threadManager = ThreadManager::newSimpleThreadManager(workerCount);
+  threadManager->threadFactory(std::make_shared<PlatformThreadFactory>());
   threadManager->start();
 
   // This server allows "workerCount" connection at a time, and reuses threads
-  boost::shared_ptr<TMultiplexedProcessor> processor = boost::make_shared<TMultiplexedProcessor>();
-  processor.get()->registerProcessor("customer", boost::make_shared<CustomerServiceProcessor>(boost::make_shared<CustomerHandler>(custDAO)));
-  processor.get()->registerProcessor("stats", boost::make_shared<StatsServiceProcessor>(boost::make_shared<StatisticsHandler>(statDAO)));
+  std::shared_ptr<TMultiplexedProcessor> processor = std::make_shared<TMultiplexedProcessor>();
+  processor.get()->registerProcessor("customer", std::make_shared<CustomerServiceProcessor>(std::make_shared<CustomerHandler>(custDAO)));
+  processor.get()->registerProcessor("stats", std::make_shared<StatsServiceProcessor>(std::make_shared<StatisticsHandler>(statDAO)));
   TThreadPoolServer server(processor,
-			   boost::make_shared<TServerSocket>(9090),
-			   boost::make_shared<TBufferedTransportFactory>(),
-			   boost::make_shared<TCompactProtocolFactory>(),
+			   std::make_shared<TServerSocket>(9090),
+			   std::make_shared<TBufferedTransportFactory>(),
+			   std::make_shared<TCompactProtocolFactory>(),
 			   threadManager);
 
   std::cout << "Starting the server..." << std::endl;
