@@ -142,10 +142,14 @@ fromThrift(std::vector<PhoneDTO>& phones, const std::vector<Phone>& thrift) {
  */
 void
 fromThrift(CustomerDTO& customer, const Customer& thrift) {
-  customer.id = thrift.id;
+  if(thrift.__isset.id && thrift.id != "") {
+    customer.id = thrift.id;
+  }
   customer.firstName = thrift.firstName;
   customer.lastName = thrift.lastName;
-  customer.birthDate = thrift.birthDate; // \todo convert to date
+  std::chrono::seconds secEpoch(thrift.birthDate / 1000); // Timestamp are sore in ms
+  std::chrono::time_point<std::chrono::system_clock> timePoint(secEpoch);
+  customer.birthDate = anch::date::Date(std::chrono::system_clock::to_time_t(timePoint));
   customer.email = thrift.email;
   fromThrift(customer.address, thrift.address);
   fromThrift(customer.phones, thrift.phones);
@@ -257,12 +261,12 @@ CustomerHandler::create(std::string& response, const CreateRequest& request) {
   // Address structure checks +
   if(customer.__isset.address) {
     const Address& addr = customer.address;
-    if(!addr.__isset.lines || !addr.__isset.zipCode || !addr.__isset.city || addr.__isset.country) {
+    if(!addr.__isset.lines || !addr.__isset.zipCode || !addr.__isset.city || !addr.__isset.country) {
       registerCall(call);
       CustomerException error;
       error.code = ErrorCode::PARAMETER;
       std::ostringstream oss;
-      oss << "Address lines[0], zip_code, city and country has to be set: " << customer;
+      oss << "Address lines[0], zipCode, city and country has to be set: " << customer;
       error.message = oss.str();
       throw error;
     }

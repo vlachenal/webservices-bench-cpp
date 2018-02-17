@@ -51,7 +51,7 @@ private:
   CustomerCloneFactory(CustomerDAO& dao): _dao(dao) {}
   virtual ~CustomerCloneFactory() {}
   virtual CustomerServiceIf* getHandler(const ::apache::thrift::TConnectionInfo& connInfo) {
-    boost::shared_ptr<TSocket> sock = boost::dynamic_pointer_cast<TSocket>(connInfo.transport);
+    std::shared_ptr<TSocket> sock = std::dynamic_pointer_cast<TSocket>(connInfo.transport);
     std::cout << "Incoming connection\n";
     std::cout << "\tSocketInfo: "  << sock->getSocketInfo() << "\n";
     std::cout << "\tPeerHost: "    << sock->getPeerHost() << "\n";
