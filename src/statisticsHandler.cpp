@@ -76,9 +76,6 @@ StatisticsHandler::consolidate(const TestSuite& test) {
   for(auto ccall : test.calls) {
     CallDTO call;
     fromThrift(call, ccall);
-    if(!call.initialized) {
-      continue;
-    }
     call = mergeCall(call);
     if(call.initialized) {
       calls.push_back(call);

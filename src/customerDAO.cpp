@@ -7,6 +7,7 @@
 #include "customerDAO.hpp"
 
 #include <sstream>
+#include <optional>
 
 #include "sql/resultSet.hpp"
 #include "sql/types/date.hpp"
@@ -74,10 +75,9 @@ CustomerDAO::listCustomers() {
  * \param lines the address lines
  */
 static void setLine(uint32_t idx, std::vector<std::string> lines, anch::sql::ResultSet& resSet) {
-  const std::string* line = resSet.get<std::string>(1);
-  if(line != NULL) {
-    lines.push_back(*line);
-    delete line;
+  std::optional<std::string> line = resSet.get<std::string>(1);
+  if(line) {
+    lines.push_back(line.value());
   }
 }
 
@@ -109,9 +109,8 @@ CustomerDAO::getDetails(const std::string& uuid) {
     }, uuid);
   res.get().queryMapRow(REQ_GET_CUST_PHONES, [&customer](anch::sql::ResultSet& resSet) {
       PhoneDTO phone;
-      const int* type = resSet.get<int>(0);
-      phone.type = static_cast<PhoneTypeDTO>(*type);
-      delete type;
+      std::optional<int> type = resSet.get<int>(0);
+      phone.type = static_cast<PhoneTypeDTO>(type.value());
       resSet.get<std::string>(1, phone.number);
       customer.phones.push_back(phone);
     }, uuid);

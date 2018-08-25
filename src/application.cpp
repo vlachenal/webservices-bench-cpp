@@ -78,7 +78,7 @@ main(int argc, char* argv[]) {
   CustomerDAO custDAO;
   StatisticsDAO statDAO;
 
-  const int workerCount = 10;
+  const int workerCount = 100;
 
   std::shared_ptr<ThreadManager> threadManager = ThreadManager::newSimpleThreadManager(workerCount);
   threadManager->threadFactory(std::make_shared<PlatformThreadFactory>());
