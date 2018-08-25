@@ -48,18 +48,17 @@ public:
   /*!
    * List all customers
    *
-   * \return the customers
+   * \param customers the customers list
    */
-  std::vector<CustomerDTO> listCustomers();
+  void listCustomers(std::vector<CustomerDTO>& customers);
 
   /*!
    * Get customer details
    *
    * \param uuid the customer UUID
-   *
-   * \return the customer details
+   * \param customer the customer details
    */
-  CustomerDTO getDetails(const std::string& uuid);
+  void getDetails(const std::string& uuid, CustomerDTO& customer);
 
   /*!
    * Create customer

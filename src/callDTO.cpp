@@ -24,7 +24,7 @@ initializeCall(int32_t reqSeq, const std::string& protocol, const std::string& m
     call.protocol = &protocol;
     call.method = &method;
     call.initialized = true;
-    call.serverStart = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    call.serverStart = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     call.ok = false;
   }
   return call;
@@ -45,7 +45,7 @@ computeKey(const CallDTO& call) {
 void
 registerCall(CallDTO& call) {
   if(call.initialized) {
-    call.serverEnd = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    call.serverEnd = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     std::lock_guard<std::mutex> guard(lock);
     calls[computeKey(call)] = call;
   }

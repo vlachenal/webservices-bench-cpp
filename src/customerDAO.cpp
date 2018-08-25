@@ -53,9 +53,8 @@ CustomerDAO::~CustomerDAO() {
 
 
 // Methods +
-std::vector<CustomerDTO>
-CustomerDAO::listCustomers() {
-  std::vector<CustomerDTO> customers;
+void
+CustomerDAO::listCustomers(std::vector<CustomerDTO>& customers) {
   pool.borrowResource().get().queryMapRow(REQ_LIST_ALL, [&customers](anch::sql::ResultSet& resSet) {
       CustomerDTO cust;
       std::string id;
@@ -65,7 +64,6 @@ CustomerDAO::listCustomers() {
       resSet.get<std::string>(2, cust.lastName);
       customers.push_back(cust);
     });
-  return customers;
 }
 
 /*!
@@ -81,10 +79,9 @@ static void setLine(uint32_t idx, std::vector<std::string> lines, anch::sql::Res
   }
 }
 
-CustomerDTO
-CustomerDAO::getDetails(const std::string& uuid) {
+void
+CustomerDAO::getDetails(const std::string& uuid, CustomerDTO& customer) {
   auto res = pool.borrowResource();
-  CustomerDTO customer;
   res.get().queryMapRow(REQ_GET_CUST, [&customer](anch::sql::ResultSet& resSet) {
       std::string id;
       resSet.get<std::string>(0, id);
@@ -114,7 +111,6 @@ CustomerDAO::getDetails(const std::string& uuid) {
       resSet.get<std::string>(1, phone.number);
       customer.phones.push_back(phone);
     }, uuid);
-  return customer;
 }
 
 /*!

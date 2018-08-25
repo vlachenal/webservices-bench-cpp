@@ -11,7 +11,7 @@
 
 // Constansts +
 /*! Thrift protocol definition */
-const std::string THRIFT_PROTO("thrift");
+const std::string THRIFT_PROTO("thrift-cpp");
 // Constansts -
 
 
@@ -24,8 +24,10 @@ const std::string THRIFT_PROTO("thrift");
  */
 void
 fromDTO(Address& address, const AddressDTO& dto) {
-  for(auto iter = dto.lines.cbegin() ; iter != dto.lines.cend() ; ++iter) {
-    address.lines.push_back(*iter);
+  if(!dto.lines.empty()) {
+    for(auto iter = dto.lines.cbegin() ; iter != dto.lines.cend() ; ++iter) {
+      address.lines.push_back(*iter);
+    }
   }
   address.zipCode = dto.zipCode;
   address.city = dto.city;
@@ -52,6 +54,9 @@ fromDTO(Phone& phone, const PhoneDTO& dto) {
  */
 void
 fromDTO(std::vector<Phone>& phones, const std::vector<PhoneDTO>& dto) {
+  if(dto.empty()) {
+    return;
+  }
   for(auto iter = dto.cbegin() ; iter != dto.cend() ; ++iter) {
     Phone phone;
     fromDTO(phone, *iter);
@@ -84,6 +89,9 @@ fromDTO(Customer& customer, const CustomerDTO& dto) {
  */
 void
 fromDTO(std::vector<Customer>& customers, const std::vector<CustomerDTO>& dto) {
+  if(dto.empty()) {
+    return;
+  }
   for(auto iter = dto.cbegin() ; iter != dto.cend() ; ++iter) {
     Customer cust;
     fromDTO(cust, *iter);
@@ -99,8 +107,10 @@ fromDTO(std::vector<Customer>& customers, const std::vector<CustomerDTO>& dto) {
  */
 void
 fromThrift(AddressDTO& address, const Address& thrift) {
-  for(auto iter = thrift.lines.cbegin() ; iter != thrift.lines.cend() ; ++iter) {
-    address.lines.push_back(*iter);
+  if(!thrift.lines.empty()) {
+    for(auto iter = thrift.lines.cbegin() ; iter != thrift.lines.cend() ; ++iter) {
+      address.lines.push_back(*iter);
+    }
   }
   address.zipCode = thrift.zipCode;
   address.city = thrift.city;
@@ -127,6 +137,9 @@ fromThrift(PhoneDTO& phone, const Phone& thrift) {
  */
 void
 fromThrift(std::vector<PhoneDTO>& phones, const std::vector<Phone>& thrift) {
+  if(thrift.empty()) {
+    return;
+  }
   for(auto iter = thrift.cbegin() ; iter != thrift.cend() ; ++iter) {
     PhoneDTO phone;
     fromThrift(phone, *iter);
@@ -178,7 +191,9 @@ CustomerHandler::listCustomers(std::vector<Customer>& response, const ListAllReq
   }
   CallDTO call = initializeCall(reqSeq, THRIFT_PROTO, method);
   try {
-    fromDTO(response, _dao.listCustomers());
+    std::vector<CustomerDTO> customers;
+    _dao.listCustomers(customers);
+    fromDTO(response, customers);
   } catch(const std::exception& e) {
     CustomerException error;
     error.code = ErrorCode::SERVER;
@@ -210,7 +225,9 @@ CustomerHandler::get(Customer& response, const GetRequest& request) {
     throw error;
   }
   try {
-    fromDTO(response, _dao.getDetails(request.id));
+    CustomerDTO customer;
+    _dao.getDetails(request.id, customer);
+    fromDTO(response, customer);
   } catch(const std::bad_cast& e) {
     CustomerException error;
     error.code = ErrorCode::PARAMETER;

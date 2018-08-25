@@ -38,7 +38,8 @@ main(void) {
 
   // List customers +
   std::cout << "List all customers in database" << std::endl;
-  std::vector<CustomerDTO> customers = dao.listCustomers();
+  std::vector<CustomerDTO> customers;
+  dao.listCustomers(customers);
   bool found = false;
   for(auto iter = customers.cbegin() ; iter != customers.cend() ; ++iter) {
     if(uuid == iter->id.toString()) {
@@ -53,7 +54,8 @@ main(void) {
   // List customers -
 
   // Get customer details +
-  CustomerDTO cust = dao.getDetails(uuid);
+  CustomerDTO cust;
+  dao.getDetails(uuid, cust);
   std::cout << "Found customer " << cust.id << '\n'
 	    << "First name: " << cust.firstName << '\n'
 	    << "Last name: " << cust.lastName << '\n'
@@ -72,7 +74,7 @@ main(void) {
 
   // Delete customers +
   dao.deleteAll();
-  customers = dao.listCustomers();
+  dao.listCustomers(customers);
   if(!customers.empty()) {
     std::cerr << "Customers should have been deleted." << std::endl;
     return 1;
