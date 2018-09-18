@@ -59,10 +59,10 @@ CustomerDAO::listCustomers(std::vector<CustomerDTO>& customers) {
       CustomerDTO cust;
       std::string id;
       resSet.get<std::string>(0, id);
-      cust.id = anch::Uuid(id);
+      cust.id = anch::UUID(id);
       resSet.get<std::string>(1, cust.firstName);
       resSet.get<std::string>(2, cust.lastName);
-      customers.push_back(cust);
+      customers.emplace_back(cust);
     });
 }
 
@@ -75,7 +75,7 @@ CustomerDAO::listCustomers(std::vector<CustomerDTO>& customers) {
 static void setLine(uint32_t idx, std::vector<std::string> lines, anch::sql::ResultSet& resSet) {
   std::optional<std::string> line = resSet.get<std::string>(1);
   if(line) {
-    lines.push_back(line.value());
+    lines.emplace_back(line.value());
   }
 }
 
@@ -85,7 +85,7 @@ CustomerDAO::getDetails(const std::string& uuid, CustomerDTO& customer) {
   res.get().queryMapRow(REQ_GET_CUST, [&customer](anch::sql::ResultSet& resSet) {
       std::string id;
       resSet.get<std::string>(0, id);
-      customer.id = anch::Uuid(id);
+      customer.id = anch::UUID(id);
       resSet.get<std::string>(1, customer.firstName);
       resSet.get<std::string>(2, customer.lastName);
       anch::sql::Date birthDate;
@@ -109,7 +109,7 @@ CustomerDAO::getDetails(const std::string& uuid, CustomerDTO& customer) {
       std::optional<int> type = resSet.get<int>(0);
       phone.type = static_cast<PhoneTypeDTO>(type.value());
       resSet.get<std::string>(1, phone.number);
-      customer.phones.push_back(phone);
+      customer.phones.emplace_back(phone);
     }, uuid);
 }
 
@@ -127,8 +127,7 @@ static const std::string getLine(uint32_t idx, const std::vector<std::string> li
 
 std::string
 CustomerDAO::create(const CustomerDTO& customer) {
-  anch::Uuid uuid;
-  anch::Uuid::generateUuid(uuid);
+  anch::UUID uuid = anch::UUID::random();
   std::string strUuid = uuid.toString();
   auto res = pool.borrowResource();
   res.get().begin();

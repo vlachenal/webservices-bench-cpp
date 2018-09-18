@@ -72,8 +72,7 @@ StatisticsDAO::save(TestSuiteDTO& testSuite) {
   testSuite.serverMemory = memory;
   // Gather system informations -
 
-  anch::Uuid uuid;
-  anch::Uuid::generateUuid(uuid);
+  anch::UUID uuid = anch::UUID::random();
   std::string strUuid = uuid.toString();
 
   auto res = pool.borrowResource();

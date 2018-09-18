@@ -26,12 +26,12 @@ void
 fromDTO(Address& address, const AddressDTO& dto) {
   if(!dto.lines.empty()) {
     for(auto iter = dto.lines.cbegin() ; iter != dto.lines.cend() ; ++iter) {
-      address.lines.push_back(*iter);
+      address.lines.emplace_back(*iter);
     }
   }
-  address.zipCode = dto.zipCode;
-  address.city = dto.city;
-  address.country = dto.country;
+  address.zipCode = std::move(dto.zipCode);
+  address.city = std::move(dto.city);
+  address.country = std::move(dto.country);
 }
 
 /*!
@@ -43,7 +43,7 @@ fromDTO(Address& address, const AddressDTO& dto) {
 void
 fromDTO(Phone& phone, const PhoneDTO& dto) {
   phone.type = static_cast<PhoneType>(static_cast<int>(dto.type));
-  phone.number = dto.number;
+  phone.number = std::move(dto.number);
 }
 
 /*!
@@ -60,7 +60,7 @@ fromDTO(std::vector<Phone>& phones, const std::vector<PhoneDTO>& dto) {
   for(auto iter = dto.cbegin() ; iter != dto.cend() ; ++iter) {
     Phone phone;
     fromDTO(phone, *iter);
-    phones.push_back(phone);
+    phones.emplace_back(phone);
   }
 }
 
@@ -73,10 +73,10 @@ fromDTO(std::vector<Phone>& phones, const std::vector<PhoneDTO>& dto) {
 void
 fromDTO(Customer& customer, const CustomerDTO& dto) {
   customer.id = dto.id.toString();
-  customer.firstName = dto.firstName;
-  customer.lastName = dto.lastName;
+  customer.firstName = std::move(dto.firstName);
+  customer.lastName = std::move(dto.lastName);
   customer.birthDate = dto.birthDate; // \todo convert to int64_t
-  customer.email = dto.email;
+  customer.email = std::move(dto.email);
   fromDTO(customer.address, dto.address);
   fromDTO(customer.phones, dto.phones);
 }
@@ -95,7 +95,7 @@ fromDTO(std::vector<Customer>& customers, const std::vector<CustomerDTO>& dto) {
   for(auto iter = dto.cbegin() ; iter != dto.cend() ; ++iter) {
     Customer cust;
     fromDTO(cust, *iter);
-    customers.push_back(cust);
+    customers.emplace_back(cust);
   }
 }
 
@@ -109,7 +109,7 @@ void
 fromThrift(AddressDTO& address, const Address& thrift) {
   if(!thrift.lines.empty()) {
     for(auto iter = thrift.lines.cbegin() ; iter != thrift.lines.cend() ; ++iter) {
-      address.lines.push_back(*iter);
+      address.lines.emplace_back(*iter);
     }
   }
   address.zipCode = thrift.zipCode;
@@ -143,7 +143,7 @@ fromThrift(std::vector<PhoneDTO>& phones, const std::vector<Phone>& thrift) {
   for(auto iter = thrift.cbegin() ; iter != thrift.cend() ; ++iter) {
     PhoneDTO phone;
     fromThrift(phone, *iter);
-    phones.push_back(phone);
+    phones.emplace_back(phone);
   }
 }
 

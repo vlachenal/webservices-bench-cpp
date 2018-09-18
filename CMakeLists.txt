@@ -70,8 +70,7 @@ target_link_libraries(
   anch-sql
   anch-resource
   anch-date
-  anch-crypto
-  anch-device
+  anch-uuid
   thrift
   ${CMAKE_THREAD_LIBS_INIT}
   )
@@ -106,8 +105,7 @@ if(UNIT_TESTS)
     anch-sql
     anch-resource
     anch-date
-    anch-crypto
-    anch-device
+    anch-uuid
     ${CMAKE_THREAD_LIBS_INIT}
     )
 
@@ -135,8 +133,7 @@ if(UNIT_TESTS)
     anch-sql
     anch-resource
     anch-date
-    anch-crypto
-    anch-device
+    anch-uuid
     ${CMAKE_THREAD_LIBS_INIT}
     )
 endif()
