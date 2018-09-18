@@ -19,6 +19,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <sstream>
+#include <csignal>
 
 #include "CustomerService.h"
 #include "customerDAO.hpp"
@@ -38,31 +39,22 @@ using apache::thrift::transport::TBufferedTransportFactory;
 using apache::thrift::protocol::TCompactProtocolFactory;
 using apache::thrift::TMultiplexedProcessor;
 
-/*
-  CalculatorIfFactory is code generated.
-  CalculatorCloneFactory is useful for getting access to the server side of the
-  transport.  It is also useful for making per-connection state.  Without this
-  CloneFactory, all connections will end up sharing the same handler instance.
-*/
-/*class CustomerCloneFactory : virtual public CustomerServiceIfFactory {
-private:
-  CustomerDAO& _dao;
- public:
-  CustomerCloneFactory(CustomerDAO& dao): _dao(dao) {}
-  virtual ~CustomerCloneFactory() {}
-  virtual CustomerServiceIf* getHandler(const ::apache::thrift::TConnectionInfo& connInfo) {
-    std::shared_ptr<TSocket> sock = std::dynamic_pointer_cast<TSocket>(connInfo.transport);
-    std::cout << "Incoming connection\n";
-    std::cout << "\tSocketInfo: "  << sock->getSocketInfo() << "\n";
-    std::cout << "\tPeerHost: "    << sock->getPeerHost() << "\n";
-    std::cout << "\tPeerAddress: " << sock->getPeerAddress() << "\n";
-    std::cout << "\tPeerPort: "    << sock->getPeerPort() << "\n";
-    return new CustomerHandler(_dao);
+
+TThreadPoolServer* thriftServer = NULL;
+
+/*!
+ * Handle SIGTERM signal.\n
+ * Stop Thrift server if it has been initialized.
+ *
+ * \param signum the signal number (15)
+ */
+void
+handleTermination(int signum) {
+  if(thriftServer != NULL) {
+    thriftServer->stop();
   }
-  virtual void releaseHandler(CustomerServiceIf* handler) {
-    delete handler;
-  }
-  };*/
+}
+
 
 /*!
  * Application entry point
@@ -74,7 +66,6 @@ private:
  */
 int
 main(int argc, char* argv[]) {
-
   CustomerDAO custDAO;
   StatisticsDAO statDAO;
 
@@ -93,6 +84,10 @@ main(int argc, char* argv[]) {
 			   std::make_shared<TBufferedTransportFactory>(),
 			   std::make_shared<TCompactProtocolFactory>(),
 			   threadManager);
+  thriftServer = &server;
+
+  std::signal(SIGTERM, handleTermination);
+  std::signal(SIGINT, handleTermination);
 
   std::cout << "Starting the server..." << std::endl;
   server.serve();
